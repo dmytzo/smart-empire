@@ -1,9 +1,11 @@
 package mqtt_client
 
 import (
+	"fmt"
 	"github.com/eclipse/paho.mqtt.golang"
 	"log"
 	"os"
+	"smart_empire/mqtt_client/sensors"
 	"time"
 )
 
@@ -35,4 +37,10 @@ func Disconnect() {
 	client.Disconnect(250)
 }
 
-func setUpSubscriptions() {}
+func setUpSubscriptions() {
+	token := client.Subscribe(sensors.DoorSensorTopic, 0, sensors.DoorSensorHandler)
+	if token.Wait() && token.Error() != nil {
+		fmt.Println(token.Error())
+		os.Exit(1)
+	}
+}
