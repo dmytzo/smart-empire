@@ -10,12 +10,12 @@ import (
 )
 
 var client mqtt.Client
-var mqttClientCfg = config.Cfg.MqttClient
+var cfg = config.Cfg.MqttClient
 
-var defaultHandler mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message) {}
+func defaultHandler(client mqtt.Client, msg mqtt.Message) {}
 
 func Run() {
-	opts := mqtt.NewClientOptions().AddBroker(mqttClientCfg.BrokerUrl).SetClientID(mqttClientCfg.ClientId)
+	opts := mqtt.NewClientOptions().AddBroker(cfg.BrokerUrl).SetClientID(cfg.ClientId)
 
 	opts.SetKeepAlive(120 * time.Second)
 	opts.SetDefaultPublishHandler(defaultHandler)
