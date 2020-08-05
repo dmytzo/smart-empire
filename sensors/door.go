@@ -2,7 +2,6 @@ package sensors
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/eclipse/paho.mqtt.golang"
 	"smart_empire/config"
 )
@@ -26,9 +25,8 @@ var DoorSensor = DoorSensorType{
 	MsgChan: make(chan DoorSensorMsg),
 }
 
-func (ds DoorSensorType) MqttHandler (client mqtt.Client, msg mqtt.Message) {
+func (ds DoorSensorType) MqttHandler (msg mqtt.Message) {
 	var sensorMsg DoorSensorMsg
 	json.Unmarshal(msg.Payload(), &sensorMsg)
-	fmt.Println(sensorMsg.Contact)
 	ds.MsgChan <- sensorMsg
 }
