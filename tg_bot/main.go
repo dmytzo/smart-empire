@@ -1,6 +1,7 @@
 package tg_bot
 
 import (
+	"fmt"
 	"gopkg.in/telegram-bot-api.v4"
 	"log"
 	"smart_empire/config"
@@ -42,6 +43,10 @@ func Run() {
 				c.Start()
 			case "stop":
 				c.Stop()
+			case "status":
+				c.Status()
+			case "attack":
+				c.Attack()
 			}
 		}
 	}
@@ -55,13 +60,13 @@ type Command struct {
 func (c Command) Start() {
 	keyboard := tgbotapi.NewReplyKeyboard(
 		tgbotapi.NewKeyboardButtonRow(
-			tgbotapi.NewKeyboardButton("EmpireStatus"),
+			tgbotapi.NewKeyboardButton("/status"),
 		),
 		tgbotapi.NewKeyboardButtonRow(
-			tgbotapi.NewKeyboardButton("EmpireAttack"),
+			tgbotapi.NewKeyboardButton("/attack"),
 		),
 	)
-	msg := tgbotapi.NewMessage(c.update.Message.Chat.ID, "Welcome to SmartEmpire1920 System")
+	msg := tgbotapi.NewMessage(c.update.Message.Chat.ID, "Welcome to the SmartEmpire1920 System")
 	msg.ReplyMarkup = keyboard
 
 	GetAuth().updateUserStatus(c.update.Message.From.UserName, true)
@@ -72,5 +77,17 @@ func (c Command) Stop() {
 	GetAuth().updateUserStatus(c.update.Message.From.UserName, false)
 	msg := tgbotapi.NewMessage(c.update.Message.Chat.ID, "You are logged out from the SmartEmpire1920 System")
 	msg.ReplyMarkup = tgbotapi.NewRemoveKeyboard(false)
+	c.bot.Send(msg)
+}
+
+func (c Command) Status() {
+	status := fmt.Sprintf("%s\n ---------- \n%s", TemperatureSensorCurrentState, DoorSensorCurrentState)
+	msg := tgbotapi.NewMessage(c.update.Message.Chat.ID, status)
+	msg.ParseMode = "Markdown"
+	c.bot.Send(msg)
+}
+
+func (c Command) Attack() {
+	msg := tgbotapi.NewMessage(c.update.Message.Chat.ID, "ATTACK!!!")
 	c.bot.Send(msg)
 }
