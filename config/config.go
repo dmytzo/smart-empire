@@ -18,6 +18,7 @@ type Config struct {
 		ClientId  string                  `yaml:"client_id"`
 		Sensors struct {
 			Door SensorConfig 			  `yaml:"door"`
+			Temperature SensorConfig 	  `yaml:"temperature"`
 		} 								  `yaml:"sensors"`
 	} 									  `yaml:"mqtt_client"`
 	TgBot struct {
