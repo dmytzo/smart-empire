@@ -1,10 +1,13 @@
 package tg_bot
 
 import (
+	"bytes"
 	"fmt"
 	"gopkg.in/telegram-bot-api.v4"
 	"log"
+	"os/exec"
 	"smart_empire/config"
+	"strings"
 )
 
 var cfg = config.Cfg.TgBot
@@ -47,6 +50,8 @@ func Run() {
 				c.Status()
 			case "attack":
 				c.Attack()
+			case "tech_info":
+				c.TechInfo()
 			}
 		}
 	}
@@ -89,5 +94,18 @@ func (c Command) Status() {
 
 func (c Command) Attack() {
 	msg := tgbotapi.NewMessage(c.update.Message.Chat.ID, "ATTACK!!!")
+	c.bot.Send(msg)
+}
+
+func (c Command) TechInfo() {
+	cmd := exec.Command("vcgencmd", "measure_temp")
+	cmd.Stdin = strings.NewReader("some input")
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	err := cmd.Run()
+	if err != nil {
+		log.Printf(err.Error())
+	}
+	msg := tgbotapi.NewMessage(c.update.Message.Chat.ID, out.String())
 	c.bot.Send(msg)
 }
