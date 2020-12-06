@@ -1,44 +1,36 @@
 package tg_bot
 
 import (
-	"fmt"
 	"gopkg.in/telegram-bot-api.v4"
-	"smart_empire/sensors"
+	"smart_empire/gateway"
+	"smart_empire/gateway/devices"
 )
 
-var TemperatureSensorCurrentState string
-var DoorSensorCurrentState string
-
-func SensorsHandler(bot *tgbotapi.BotAPI) {
+func EventsHandler(bot *tgbotapi.BotAPI) {
 	for {
 		select {
-		case ds := <- sensors.DoorSensor.MsgChan:
-			doorSensorHandler(bot, ds)
-		case ts := <- sensors.TemperatureSensor.MsgChan:
-			thermometerSensorHandler(bot, ts)
+		case ds := <- gateway.DoorSensor.DoorEventChan:
+			doorEventsHandler(bot, ds)
+		case _ = <- gateway.Siren.AlarmChan:
+			alarmEventsHandler(bot)
 		}
 	}
 }
 
-func doorSensorHandler(bot *tgbotapi.BotAPI, dsMsg sensors.DoorSensorMsg) {
-	event := "closed"
-	if dsMsg.Contact == false {
-		event = "opened"
-	}
-	msg := fmt.Sprintf("*DoorSensor:* \n%s", event)
-	DoorSensorCurrentState = msg
+func doorEventsHandler(bot *tgbotapi.BotAPI, msg devices.DoorSensorMsg) {
+	textMessage := getDoorEventMessage(msg)
+	sendToActiveUsers(bot, textMessage)
+}
+
+func alarmEventsHandler(bot *tgbotapi.BotAPI) {
+	sendToActiveUsers(bot, getAlarmMessage())
+}
+
+func sendToActiveUsers(bot *tgbotapi.BotAPI, msg string) {
 	for _, user := range GetAuth().getActiveUsers() {
 		msg := tgbotapi.NewMessage(user.ChatId, msg)
+		msg.ReplyMarkup = getGeneralKeyboard()
 		msg.ParseMode = "Markdown"
 		bot.Send(msg)
 	}
-}
-
-func thermometerSensorHandler(bot *tgbotapi.BotAPI, dsMsg sensors.TemperatureSensorMsg) {
-	msg := fmt.Sprintf(
-		"*TemperatureSensor:* \n" +
-			"%.1f ℃ / %.1f %%",
-			dsMsg.Temperature, dsMsg.Humidity,
-		)
-	TemperatureSensorCurrentState = msg
 }

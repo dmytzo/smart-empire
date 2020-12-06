@@ -20,7 +20,12 @@ func (u *User) updateStatus(isActive bool) {
 }
 
 type Auth struct {
-	Users []*User
+	Users []*User `yaml:"users"`
+	ApiToken string `yaml:"api_token"`
+}
+
+func (a *Auth) getApiToken() string {
+	return a.ApiToken
 }
 
 func (a *Auth) getUserByUsername(username string) (*User, error){
@@ -57,7 +62,7 @@ func GetAuth() *Auth {
 
 func newAuth() *Auth {
 	auth := &Auth{}
-	file, err := os.Open("auth.yaml")
+	file, err := os.Open("configs/tg.yaml")
 	if err != nil {
 		log.Fatal("Auth file was not found")
 	}
@@ -70,7 +75,7 @@ func newAuth() *Auth {
 }
 
 func updateAuth(auth *Auth){
-	file, err := os.OpenFile("auth.yaml", os.O_WRONLY, os.ModePerm)
+	file, err := os.OpenFile("configs/tg.yaml", os.O_WRONLY, os.ModePerm)
 	if err != nil {
 		log.Fatal("Auth file was not found")
 	}

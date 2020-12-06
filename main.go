@@ -1,11 +1,11 @@
 package main
 
 import (
-	"smart_empire/mqtt_client"
+	"smart_empire/gateway"
 	"smart_empire/tg_bot"
 )
 
 func main() {
-	mqtt_client.Run()
+	gateway.Run()
 	tg_bot.Run()
 }
