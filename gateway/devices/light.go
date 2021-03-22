@@ -19,32 +19,31 @@ type LightMsg struct {
 }
 
 type LightType struct {
-	Name string
 	Topic string
 	LastReceivedMsg LightMsg
 }
 
-func (ts *LightType) MqttHandler (msg mqtt.Message) {
+func (d *LightType) MqttHandler (msg mqtt.Message) {
 	var sensorMsg LightReceivedMsg
 	json.Unmarshal(msg.Payload(), &sensorMsg)
 	msgToSend := LightMsg{sensorMsg.State}
-	ts.LastReceivedMsg = msgToSend
+	d.LastReceivedMsg = msgToSend
 }
 
-func (ts *LightType) GetLatestMsg() LightMsg {
-	return ts.LastReceivedMsg
+func (d *LightType) GetLatestMsg() LightMsg {
+	return d.LastReceivedMsg
 }
 
-func (ts *LightType) GetPublishTopic() string {
-	return fmt.Sprintf("%s/set", ts.Topic)
+func (d *LightType) GetPublishTopic() string {
+	return fmt.Sprintf("%s/set", d.Topic)
 }
 
-func (ts *LightType) Switch() {
+func (d *LightType) Switch() {
 	option := "OFF"
-	if ts.LastReceivedMsg.State == option {
+	if d.LastReceivedMsg.State == option {
 		option = "ON"
 	}
 	var payload, _ = json.Marshal(map[string]string{"state": option})
-	client.Publish(ts.GetPublishTopic(), payload)
-	ts.LastReceivedMsg.State = option
+	client.Publish(d.GetPublishTopic(), payload)
+	d.LastReceivedMsg.State = option
 }

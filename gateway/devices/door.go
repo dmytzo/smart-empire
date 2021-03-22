@@ -13,31 +13,30 @@ type doorSensorMsgReceived struct {
 }
 
 type DoorSensorMsg struct {
-	Contact     bool  `json:"contact"`
+	Contact bool `json:"contact"`
 }
 
 type DoorSensorType struct {
-	Name    string
-	Topic   string
+	Topic           string
 	LastReceivedMsg DoorSensorMsg
-	DoorEventChan chan DoorSensorMsg
+	EventChan       chan DoorSensorMsg
 }
 
-func (ds *DoorSensorType) ParseMsg(msg mqtt.Message) DoorSensorMsg {
+func (d *DoorSensorType) ParseMsg(msg mqtt.Message) DoorSensorMsg {
 	var sensorMsg doorSensorMsgReceived
 	json.Unmarshal(msg.Payload(), &sensorMsg)
 	return DoorSensorMsg{sensorMsg.Contact}
 }
 
-func (ds *DoorSensorType) MqttHandler(msg mqtt.Message) {
-	msgToSend := ds.ParseMsg(msg)
-	if ds.LastReceivedMsg == msgToSend {
+func (d *DoorSensorType) MqttHandler(msg mqtt.Message) {
+	msgToSend := d.ParseMsg(msg)
+	if d.LastReceivedMsg == msgToSend {
 		return
 	}
-	ds.LastReceivedMsg = msgToSend
-	ds.DoorEventChan <- msgToSend
+	d.LastReceivedMsg = msgToSend
+	d.EventChan <- msgToSend
 }
 
-func (ds *DoorSensorType) GetLatestMsg() DoorSensorMsg {
-	return ds.LastReceivedMsg
+func (d *DoorSensorType) GetLatestMsg() DoorSensorMsg {
+	return d.LastReceivedMsg
 }

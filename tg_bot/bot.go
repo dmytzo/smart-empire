@@ -1,24 +1,38 @@
 package tg_bot
 
 import (
+	"fmt"
 	"gopkg.in/telegram-bot-api.v4"
 	"log"
 )
 
+const (
+	Start         = "start"
+	Stop          = "stop"
+	TechInfo      = "tech_info"
+	Status        = "status"
+	SwitchLight   = "switch_light"
+	SwitchDefMode = "switch_def_mode"
+	SwitchSiren   = "switch_siren"
+	DefModeHome   = "def_mode_home"
+	DefModeOn     = "def_mode_on"
+	DefModeOff    = "def_mode_off"
+)
+
 var generalKeyboard = tgbotapi.NewReplyKeyboard(
-	tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton("/status")),
-	tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton("/switch_light")),
-	tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton("/switch_def_mode")),
-	tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton("/switch_siren")),
+	tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton(fmt.Sprintf("/%s", Status))),
+	tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton(fmt.Sprintf("/%s", SwitchLight))),
+	tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton(fmt.Sprintf("/%s", SwitchDefMode))),
+	tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton(fmt.Sprintf("/%s", SwitchSiren))),
 )
 
 var defModeKeyboard = tgbotapi.NewReplyKeyboard(
-	tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton("/def_mode_home")),
-	tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton("/def_mode_on")),
-	tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton("/def_mode_off")),
+	tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton(fmt.Sprintf("/%s", DefModeHome))),
+	tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton(fmt.Sprintf("/%s", DefModeOn))),
+	tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton(fmt.Sprintf("/%s", DefModeOff))),
 )
 
-func getGeneralKeyboard() tgbotapi.ReplyKeyboardMarkup{
+func getGeneralKeyboard() tgbotapi.ReplyKeyboardMarkup {
 	return generalKeyboard
 }
 
@@ -51,25 +65,25 @@ func RunTelegramBot() {
 			command := update.Message.Command()
 			c := Command{bot, update}
 			switch command {
-			case "start":
+			case Start:
 				c.Start()
-			case "stop":
+			case Stop:
 				c.Stop()
-			case "status":
+			case Status:
 				c.Status()
-			case "switch_siren":
+			case SwitchSiren:
 				c.SwitchSiren()
-			case "switch_light":
+			case SwitchLight:
 				c.SwitchLight()
-			case "switch_def_mode":
+			case SwitchDefMode:
 				c.SwitchDefMode()
-			case "def_mode_home":
+			case DefModeHome:
 				c.DefMode("HOME")
-			case "def_mode_on":
+			case DefModeOn:
 				c.DefMode("ON")
-			case "def_mode_off":
+			case DefModeOff:
 				c.DefMode("OFF")
-			case "tech_info":
+			case TechInfo:
 				c.TechInfo()
 			}
 		}

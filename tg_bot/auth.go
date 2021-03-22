@@ -11,8 +11,8 @@ var auth = newAuth()
 
 type User struct {
 	Username string `yaml:"username"`
-	ChatId int64	`yaml:"chat_id"`
-	Active bool		`yaml:"active"`
+	ChatId   int64  `yaml:"chat_id"`
+	Active   bool   `yaml:"active"`
 }
 
 func (u *User) updateStatus(isActive bool) {
@@ -20,15 +20,15 @@ func (u *User) updateStatus(isActive bool) {
 }
 
 type Auth struct {
-	Users []*User `yaml:"users"`
-	ApiToken string `yaml:"api_token"`
+	Users    []*User `yaml:"users"`
+	ApiToken string  `yaml:"api_token"`
 }
 
 func (a *Auth) getApiToken() string {
 	return a.ApiToken
 }
 
-func (a *Auth) getUserByUsername(username string) (*User, error){
+func (a *Auth) getUserByUsername(username string) (*User, error) {
 	for _, user := range a.Users {
 		if user.Username == username {
 			return user, nil
@@ -61,20 +61,20 @@ func GetAuth() *Auth {
 }
 
 func newAuth() *Auth {
-	auth := &Auth{}
+	newAuthType := &Auth{}
 	file, err := os.Open("configs/tg.yaml")
 	if err != nil {
 		log.Fatal("Auth file was not found")
 	}
 	defer file.Close()
 	d := yaml.NewDecoder(file)
-	if err := d.Decode(&auth); err != nil {
+	if err = d.Decode(&newAuthType); err != nil {
 		log.Fatal("Can not decode auth file")
 	}
-	return auth
+	return newAuthType
 }
 
-func updateAuth(auth *Auth){
+func updateAuth(auth *Auth) {
 	file, err := os.OpenFile("configs/tg.yaml", os.O_WRONLY, os.ModePerm)
 	if err != nil {
 		log.Fatal("Auth file was not found")

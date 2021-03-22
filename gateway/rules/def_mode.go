@@ -6,7 +6,13 @@ import (
 	"time"
 )
 
-var defMode string = "OFF"
+const (
+	ON   = "ON"
+	OFF  = "OFF"
+	HOME = "HOME"
+)
+
+var defMode = OFF
 
 func GetDefMode() string {
 	return defMode
@@ -16,17 +22,17 @@ func SetDefMode(state string) {
 	defMode = state
 }
 
-func IsHomeDefModeActiveTime() bool{
+func IsHomeDefModeActiveTime() bool {
 	now := time.Now().Hour()
 	return now <= 7 && now == 23
 }
 
 func IsDefModeActivated() bool {
-	return defMode == "ON"
+	return defMode == ON
 }
 
 func IsHomeDefModeActivated() bool {
-	return defMode == "HOME"
+	return defMode == HOME
 }
 
 func DoorDef(msg mqtt.Message, door devices.DoorSensorType, siren *devices.SirenType) {

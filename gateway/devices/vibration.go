@@ -22,7 +22,6 @@ package devices
 //}
 //
 //type VibrationSensorType struct {
-//	Name string
 //	Topic string
 //	MsgChan chan VibrationSensorMsg
 //}

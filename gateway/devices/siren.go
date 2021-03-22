@@ -17,38 +17,37 @@ type SirenMsg struct {
 }
 
 type SirenType struct {
-	Name            string
 	Topic           string
 	LastReceivedMsg SirenMsg
-	AlarmChan       chan bool
+	EventChan       chan bool
 }
 
-func (st *SirenType) MqttHandler(msg mqtt.Message) {
+func (d *SirenType) MqttHandler(msg mqtt.Message) {
 	var sensorMsg SirenReceivedMsg
 	json.Unmarshal(msg.Payload(), &sensorMsg)
 	msgToSend := SirenMsg{sensorMsg.Value}
-	st.LastReceivedMsg = msgToSend
+	d.LastReceivedMsg = msgToSend
 }
 
-func (st *SirenType) GetLatestMsg() SirenMsg {
-	return st.LastReceivedMsg
+func (d *SirenType) GetLatestMsg() SirenMsg {
+	return d.LastReceivedMsg
 }
 
-func (st *SirenType) GetPublishTopic() string {
-	return fmt.Sprintf("%s/set", st.Topic)
+func (d *SirenType) GetPublishTopic() string {
+	return fmt.Sprintf("%s/set", d.Topic)
 }
 
-func (st *SirenType) AutoSwitch() {
-	st.Switch(!st.LastReceivedMsg.Value)
+func (d *SirenType) Switch() {
+	d.setValue(!d.LastReceivedMsg.Value)
 }
 
-func (st *SirenType) Switch(option bool) {
+func (d *SirenType) setValue(option bool) {
 	var payload, _ = json.Marshal(map[string]bool{"value": option})
-	client.Publish(st.GetPublishTopic(), payload)
-	st.LastReceivedMsg.Value = option
+	client.Publish(d.GetPublishTopic(), payload)
+	d.LastReceivedMsg.Value = option
 }
 
-func (st *SirenType) ActivateAlarm() {
-	st.Switch(true)
-	st.AlarmChan <- true
+func (d *SirenType) ActivateAlarm() {
+	d.setValue(true)
+	d.EventChan <- true
 }

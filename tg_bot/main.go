@@ -1,6 +1,5 @@
 package tg_bot
 
-func Run()  {
+func Run() {
 	RunTelegramBot()
 }
-

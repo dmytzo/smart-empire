@@ -97,14 +97,3 @@ func getStatusMsg() string {
 		doorMsg,
 	)
 }
-
-func getOldStatusMsg() string {
-	return fmt.Sprintf(
-		"%s\n ---------- \n%s\n ---------- \n%s\n ---------- \n%s\n ---------- \n%s",
-		getCurrentTemperatureMsg(),
-		getCurrentDefModeMsg(),
-		getCurrentDoorMsg(),
-		getCurrentLightMsg(),
-		getCurrentSirenMsg(),
-	)
-}

@@ -43,7 +43,7 @@ type devicesCfg struct {
 	Temperature temperatureSensorCfg `yaml:"temperature"`
 	Light       sensorCfg            `yaml:"light"`
 	Siren       sensorCfg            `yaml:"siren"`
-	//Vibration sensorCfg `yaml:"vibration"`
+	Switch      sensorCfg            `yaml:"switch"`
 }
 
 type clientsCfg struct {

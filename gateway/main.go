@@ -8,34 +8,32 @@ import (
 	"smart_empire/gateway/rules"
 )
 
-
-
 var DoorSensor = devices.DoorSensorType{
-	Name:  "DoorSensor",
-	Topic: config.Devices.Door.Topic,
+	Topic:           config.Devices.Door.Topic,
 	LastReceivedMsg: devices.DoorSensorMsg{},
-	DoorEventChan: make(chan devices.DoorSensorMsg),
+	EventChan:       make(chan devices.DoorSensorMsg),
 }
 
 var Light = devices.LightType{
-	Name:    "Light",
-	Topic:   config.Devices.Light.Topic,
+	Topic:           config.Devices.Light.Topic,
 	LastReceivedMsg: devices.LightMsg{},
 }
 
 var TemperatureSensor = devices.TemperatureSensorType{
-	Name:    "TemperatureSensor",
-	Topic:   config.Devices.Temperature.Topic,
+	Topic:           config.Devices.Temperature.Topic,
 	LastReceivedMsg: devices.TemperatureSensorMsg{},
 }
 
 var Siren = devices.SirenType{
-	Name:    "Siren",
-	Topic:   config.Devices.Siren.Topic,
+	Topic:           config.Devices.Siren.Topic,
 	LastReceivedMsg: devices.SirenMsg{},
-	AlarmChan: make(chan bool),
+	EventChan:       make(chan bool),
 }
 
+var Switch = devices.SwitchType{
+	Topic:           config.Devices.Switch.Topic,
+	LastReceivedMsg: devices.SwitchMsg{},
+}
 
 func sensorsHandler(client mqtt.Client, msg mqtt.Message) {
 	switch msg.Topic() {
@@ -48,6 +46,9 @@ func sensorsHandler(client mqtt.Client, msg mqtt.Message) {
 		Light.MqttHandler(msg)
 	case Siren.Topic:
 		Siren.MqttHandler(msg)
+	case Switch.Topic:
+		Switch.MqttHandler(msg)
+		rules.SwitchControl(msg, Switch, &Siren, &Light)
 	}
 }
 
@@ -56,8 +57,9 @@ func setUpSubscriptions(client mqtt.Client) {
 		map[string]byte{
 			DoorSensor.Topic:        0,
 			TemperatureSensor.Topic: 0,
-			Light.Topic: 0,
-			Siren.Topic: 0,
+			Light.Topic:             0,
+			Siren.Topic:             0,
+			Switch.Topic:            0,
 		},
 		sensorsHandler,
 	)
@@ -66,6 +68,6 @@ func setUpSubscriptions(client mqtt.Client) {
 	}
 }
 
-func Run()  {
+func Run() {
 	setUpSubscriptions(client.MqttClient)
 }

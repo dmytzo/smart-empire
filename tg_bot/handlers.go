@@ -9,9 +9,9 @@ import (
 func EventsHandler(bot *tgbotapi.BotAPI) {
 	for {
 		select {
-		case ds := <- gateway.DoorSensor.DoorEventChan:
+		case ds := <-gateway.DoorSensor.EventChan:
 			doorEventsHandler(bot, ds)
-		case _ = <- gateway.Siren.AlarmChan:
+		case _ = <-gateway.Siren.EventChan:
 			alarmEventsHandler(bot)
 		}
 	}

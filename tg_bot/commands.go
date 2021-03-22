@@ -9,7 +9,7 @@ import (
 )
 
 type Command struct {
-	bot *tgbotapi.BotAPI
+	bot    *tgbotapi.BotAPI
 	update tgbotapi.Update
 }
 

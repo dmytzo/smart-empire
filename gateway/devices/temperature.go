@@ -9,30 +9,35 @@ import (
 
 var settings = config.Devices.Temperature.Settings
 
+const (
+	EXCELLENT = "EXCELLENT"
+	NORMAL    = "NORMAL"
+	BAD       = "BAD"
+)
+
 type TemperatureSensorReceivedMsg struct {
-	Battery int64 		`json:"battery"`
-	Voltage int64 		`json:"voltage"`
+	Battery     int64   `json:"battery"`
+	Voltage     int64   `json:"voltage"`
 	Temperature float64 `json:"temperature"`
-	Humidity float64 	`json:"humidity"`
-	Pressure float64 	`json:"pressure"`
-	Linkquality int64 	`json:"linkquality"`
+	Humidity    float64 `json:"humidity"`
+	Pressure    float64 `json:"pressure"`
+	Linkquality int64   `json:"linkquality"`
 }
 
 type TemperatureSensorMsg struct {
-	Temperature float64 `json:"temperature"`
-	Humidity float64 	`json:"humidity"`
-	Pressure float64 	`json:"pressure"`
-	TemperatureIndicator string `json:"temperature_indicator"`
-	HumidityIndicator string `json:"humidity_indicator"`
+	Temperature          float64 `json:"temperature"`
+	Humidity             float64 `json:"humidity"`
+	Pressure             float64 `json:"pressure"`
+	TemperatureIndicator string  `json:"temperature_indicator"`
+	HumidityIndicator    string  `json:"humidity_indicator"`
 }
 
 type TemperatureSensorType struct {
-	Name string
-	Topic string
+	Topic           string
 	LastReceivedMsg TemperatureSensorMsg
 }
 
-func (ts *TemperatureSensorType) MqttHandler (msg mqtt.Message) {
+func (d *TemperatureSensorType) MqttHandler(msg mqtt.Message) {
 	var sensorMsg TemperatureSensorReceivedMsg
 	json.Unmarshal(msg.Payload(), &sensorMsg)
 	msgToSend := TemperatureSensorMsg{
@@ -42,11 +47,11 @@ func (ts *TemperatureSensorType) MqttHandler (msg mqtt.Message) {
 		getTemperatureStatus(sensorMsg.Temperature),
 		getHumidityStatus(sensorMsg.Humidity),
 	}
-	ts.LastReceivedMsg = msgToSend
+	d.LastReceivedMsg = msgToSend
 }
 
-func (ts *TemperatureSensorType) GetLatestMsg() TemperatureSensorMsg {
-	return ts.LastReceivedMsg
+func (d *TemperatureSensorType) GetLatestMsg() TemperatureSensorMsg {
+	return d.LastReceivedMsg
 }
 
 func getTemperatureStatus(temperature float64) string {
@@ -60,27 +65,27 @@ func getTemperatureStatus(temperature float64) string {
 	}
 	normalDelta := settings.Temperature.NormalDelta
 	if temperature >= monthsCfg.From && temperature <= monthsCfg.To {
-		return "EXCELLENT"
+		return EXCELLENT
 	}
 	normalFrom := monthsCfg.From - normalDelta
 	normalTo := monthsCfg.To + normalDelta
-	if temperature >= normalFrom  && temperature <= normalTo {
-		return "NORMAL"
+	if temperature >= normalFrom && temperature <= normalTo {
+		return NORMAL
 	}
-	return "BAD"
+	return BAD
 }
 
 func getHumidityStatus(humidity float64) string {
 	normalDelta := settings.Humidity.NormalDelta
 	if humidity >= settings.Humidity.From && humidity <= settings.Humidity.To {
-		return "EXCELLENT"
+		return EXCELLENT
 	}
 	normalFrom := settings.Humidity.From - normalDelta
 	normalTo := settings.Humidity.To + normalDelta
 	if humidity >= normalFrom && humidity <= normalTo {
-		return "NORMAL"
+		return NORMAL
 	}
-	return "BAD"
+	return BAD
 }
 
 func getCurrentMonth() int64 {

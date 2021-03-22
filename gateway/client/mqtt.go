@@ -8,7 +8,6 @@ import (
 
 var MqttClient = createMqttClient()
 
-
 func createMqttClient() mqtt.Client {
 	var cfg = config.Clients.Mqtt
 	opts := mqtt.NewClientOptions().AddBroker(cfg.BrokerUrl).SetClientID(cfg.ClientId)

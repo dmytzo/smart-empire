@@ -31,7 +31,7 @@ func switchLight() string {
 }
 
 func switchSiren() string {
-	gateway.Siren.AutoSwitch()
+	gateway.Siren.Switch()
 	return getCurrentSirenMsg()
 }
 
